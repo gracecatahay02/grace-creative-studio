@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grace Creative Studio | Design Requests</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">GC</div>
+      <div>
+        <h2>GRACE CREATIVE STUDIO</h2>
+        <p>GRAPHIC DESIGN & DIGITAL CREATIVES</p>
+      </div>
+    </div>
+    <span class="desk-label">CREATIVE DESK / 01</span>
+  </header>
+
+  <main class="layout">
+    <aside class="intro">
+      <p class="eyebrow">DESIGN REQUESTS</p>
+
+      <h1>
+        Great design<br>
+        starts with a<br>
+        <span>clear brief.</span>
+      </h1>
+
+      <p>Tell Grace what you need.</p>
+      <p>Keep the details, assets and progress in one place.</p>
+
+      <div class="reminder">
+        <h3>One request. One design.</h3>
+        <p>
+          For a different campaign or format,
+          send a separate brief.
+        </p>
+      </div>
+
+      <ol class="steps">
+        <li>Share the brief</li>
+        <li>Review the design</li>
+        <li>Approve & receive</li>
+      </ol>
+    <section class="brief-checklist">
+  <h2>Before you submit</h2>
+  <p>Prepare these for your design request:</p>
+
+  <ul>
+    <li><strong>Logo & photos</strong> — Clear images to use.</li>
+    <li><strong>Exact text</strong> — Promo, prices, and contact details.</li>
+    <li><strong>Design size</strong> — Post, story, flyer, or banner.</li>
+    <li><strong>Deadline</strong> — When you need the design.</li>
+  </ul>
+</section>
+
+<section class="sample-designs">
+  <h2>Design Services</h2>
+  <p>Creative designs for your business by Grace.</p>
+
+  <div class="sample-card">
+    <h3>Social Media Graphics</h3>
+    <p>Facebook &amp; Instagram posts</p>
+  </div>
+
+  <div class="sample-card">
+    <h3>Promotional Designs</h3>
+    <p>Sale banners &amp; product ads</p>
+  </div>
+
+  <div class="sample-card">
+    <h3>Branding Essentials</h3>
+    <p>Logos, business cards &amp; shop banners</p>
+  </div>
+</section>
+<img
+  src="creative-banner.png/creative-banner.png"
+  alt="Let’s create something great."
+  class="creative-banner"
+>
+</aside>
+    <section class="workspace">
+      <nav class="tabs" aria-label="Request views">
+        <button type="button" id="new-tab" class="tab active">
+          New request
+        </button>
+        <button type="button" id="tracker-tab" class="tab">
+          Request tracker
+        </button>
+      </nav>
+
+      <section id="new-panel">
+        <p class="eyebrow">THE BRIEF</p>
+        <h2>What are we creating?</h2>
+        <p class="muted">Fields marked * are required.</p>
+
+        <form
+  id="request-form"
+  name="design-request"
+  method="POST"
+  data-netlify="true"
+  enctype="multipart/form-data"
+>
+  <input type="hidden" name="form-name" value="design-request">
+          <fieldset class="form-card">
+            <legend>01 Contact & project</legend>
+
+            <div class="form-grid">
+              <label>
+                Your name *
+                <input name="name" required
+                  placeholder="Who is requesting this?">
+              </label>
+
+              <label>
+                Email or Messenger name *
+                <input name="contact" required
+                  placeholder="How can Grace reach you?">
+              </label>
+
+              <label class="full-width">
+                Business / brand name
+                <input name="business"
+                  placeholder="Your business or brand">
+              </label>
+
+              <label class="full-width">
+                Request title *
+                <input name="title" required
+                  placeholder="e.g. October sale Instagram post">
+              </label>
+
+              <label>
+                Design type *
+                <select name="format" required>
+                  <option>Facebook / Instagram post</option>
+                  <option>Story / Reel cover</option>
+                  <option>Product listing image</option>
+                  <option>Banner</option>
+                  <option>Flyer / Poster</option>
+                  <option>Logo</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label>
+                Design purpose *
+                <select name="purpose" required>
+                  <option>Product promotion</option>
+                  <option>Sale announcement</option>
+                  <option>Brand awareness</option>
+                  <option>Event invitation</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label>
+                Size / dimensions
+                <input name="size" placeholder="1080 × 1350 px">
+              </label>
+
+              <label>
+                Requested deadline *
+                <input type="date" name="deadline" required>
+              </label>
+            </div>
+
+            <p class="muted">
+              Deadline is subject to confirmation with Grace.
+            </p>
+          </fieldset>
+
+          <fieldset class="form-card">
+            <legend>02 Content & direction</legend>
+
+            <label>
+              Exact text for the design *
+              <textarea name="copy" rows="5" required
+                placeholder="Include the headline, prices and dates."></textarea>
+            </label>
+
+            <label>
+              Colors / preferred style
+              <textarea name="style" rows="3"
+                placeholder="e.g. Black and gold, clean and elegant"></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset class="form-card">
+            <legend>03 Assets & references</legend>
+
+<label class="full-width">
+ <label class="full-width">
+  Upload images — up to 20
+  <input
+    type="file"
+    id="reference-images"
+    name="reference-image"
+    accept="image/*"
+    multiple
+  >
+</label>
+
+<p class="muted">
+  Select up to 20 logos, photos, or sample designs.
+  Hold Ctrl while clicking to select several images.
+</p>
+<div hidden>
+  <input type="file" name="image-01">
+  <input type="file" name="image-02">
+  <input type="file" name="image-03">
+  <input type="file" name="image-04">
+  <input type="file" name="image-05">
+  <input type="file" name="image-06">
+  <input type="file" name="image-07">
+  <input type="file" name="image-08">
+  <input type="file" name="image-09">
+  <input type="file" name="image-10">
+  <input type="file" name="image-11">
+  <input type="file" name="image-12">
+  <input type="file" name="image-13">
+  <input type="file" name="image-14">
+  <input type="file" name="image-15">
+  <input type="file" name="image-16">
+  <input type="file" name="image-17">
+  <input type="file" name="image-18">
+  <input type="file" name="image-19">
+  <input type="file" name="image-20">
+</div>
+<label>
+  Video link — up to 1 hour
+  <input
+    type="url"
+    name="video-link"
+    placeholder="Paste your Google Drive video link"
+  >
+</label>
+
+<p class="muted">
+  Videos: up to 1 hour, maximum 25 GB.
+  Upload to Google Drive and paste the shared link above.
+  Make sure Grace can view and download the file.
+</p>
+
+<label>
+  Reference / folder links
+  <textarea
+    name="links"
+    rows="3"
+    placeholder="Paste links to your logo, photos or references."
+  ></textarea>
+</label>
+
+<p class="muted">
+  Give Grace access to any linked folders or designs.
+</p>
+
+            <label>
+              Additional notes
+              <textarea name="notes" rows="3"
+                placeholder="Anything else Grace should know?"></textarea>
+            </label>
+          </fieldset>
+
+          <p>Check the text, prices and dates before submitting.</p>
+
+          <button type="submit" class="submit-button" disabled>
+            Submit design request
+          </button>
+
+          <p class="muted">
+            Practice version — submission is not connected yet.
+          </p>
+        </form>
+              </section>
+
+      <section id="tracker-panel" hidden>
+        <p class="eyebrow">YOUR REQUESTS</p>
+        <h2>Request tracker</h2>
+        <div id="request-list">
+          <p>No practice requests yet.</p>
+        </div>
+      </section>
+
+      <footer>GRACE CREATIVE STUDIO / CREATIVE DESK</footer>
+    </section>
+  </main>
+</body>
+</html>
