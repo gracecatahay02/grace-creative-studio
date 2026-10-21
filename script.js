@@ -1,7 +1,7 @@
 const TRACKER_URL =
   "https://script.google.com/macros/s/AKfycbwmMsBWRDZ6jAa7rKwiKHhMYSZkGO5s7fAfrolzOprxnSFpsJLDtdG8AUGa9yYufK6N/exec";
 
-const WEBHOOK_KEY = "PASTE_WEBHOOK_KEY_HERE";
+const WEBHOOK_KEY = "871215da-7e7a-497b-b58e-76e5aeb9fd14e723135e-992d-4c74-a3ca-43790f10d791";
 
 const form = document.querySelector("#request-form");
 const submitButton = form.querySelector(".submit-button");
