@@ -1,3 +1,8 @@
+const TRACKER_URL =
+  "https://script.google.com/macros/s/AKfycbwmMsBWRDZ6jAa7rKwiKHhMYSZkGO5s7fAfrolzOprxnSFpsJLDtdG8AUGa9yYufK6N/exec";
+
+const WEBHOOK_KEY = "PASTE_WEBHOOK_KEY_HERE";
+
 const form = document.querySelector("#request-form");
 const submitButton = form.querySelector(".submit-button");
 const newTab = document.querySelector("#new-tab");
@@ -8,10 +13,8 @@ const requestList = document.querySelector("#request-list");
 
 function showPanel(panel) {
   const showNew = panel === "new";
-
   newPanel.hidden = !showNew;
   trackerPanel.hidden = showNew;
-
   newTab.classList.toggle("active", showNew);
   trackerTab.classList.toggle("active", !showNew);
   newTab.setAttribute("aria-pressed", String(showNew));
@@ -23,29 +26,36 @@ trackerTab.addEventListener("click", () => showPanel("tracker"));
 
 trackerTab.textContent = "My submissions";
 
-const trackerHeading = trackerPanel.querySelector("h2");
-if (trackerHeading) {
-  trackerHeading.textContent = "My submissions";
-}
+const heading = trackerPanel.querySelector("h2");
+if (heading) heading.textContent = "My submissions";
 
 requestList.replaceChildren();
 
 const receiptNotice = document.createElement("p");
 receiptNotice.className = "muted";
 receiptNotice.textContent =
-  "Receipts appear here during this visit only. " +
-  "Contact Grace for updates on your design.";
+  "Confirmed submissions appear here during this visit. " +
+  "Contact Grace for design updates.";
 requestList.append(receiptNotice);
 
-submitButton.disabled = false;
-submitButton.textContent = "Submit";
+form.querySelectorAll('input[type="file"]').forEach(input => {
+  input.disabled = true;
+});
+
+const imageHelp = document.querySelector("#reference-images")
+  ?.closest("label")?.nextElementSibling;
+
+if (imageHelp) {
+  imageHelp.textContent =
+    "Upload your images to Google Drive and paste the shared " +
+    "folder link in Reference / folder links below.";
+}
 
 const notice = submitButton.nextElementSibling;
 if (notice) {
   notice.textContent =
-    "Upload up to 20 images, maximum 25 GB combined. " +
-    "For larger images or videos up to 1 hours, " +
-    "paste a shared Google Drive link.";
+    "For images and videos, paste shared Google Drive links. " +
+    "Make sure Grace has permission to open them.";
 }
 
 const feedback = document.createElement("p");
@@ -54,81 +64,117 @@ feedback.setAttribute("role", "status");
 feedback.setAttribute("aria-live", "polite");
 form.append(feedback);
 
+submitButton.disabled = false;
+submitButton.textContent = "Submit design request";
+
 let submitting = false;
+let pendingSubmission = null;
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
 
   if (submitting || !form.reportValidity()) return;
 
-  if (
-    location.protocol === "file:" ||
-    ["localhost", "127.0.0.1"].includes(location.hostname)
-  ) {
+  if (!WEBHOOK_KEY || WEBHOOK_KEY === "PASTE_WEBHOOK_KEY_HERE") {
     feedback.textContent =
-      "Please open the published Netlify website to submit.";
+      "Tracker setup is incomplete. Please contact Grace.";
     return;
   }
 
-  const data = new FormData(form);
-  data.set("form-name", "design-request");
+  const fields = new FormData(form);
+  const data = {};
 
-  const image = data.get("reference-image");
-
-  if (image instanceof File && image.size > 5 * 1024 * 1024) {
-    feedback.textContent =
-      "Your image is too large. Choose an image under 5 MB.";
-    return;
+  for (const [name, value] of fields.entries()) {
+    if (typeof value === "string") data[name] = value;
   }
 
-  const projectTitle = String(data.get("title") || "Design request");
+  data.links = [
+    data.links,
+    data["video-link"] ? "Video: " + data["video-link"] : ""
+  ].filter(Boolean).join("\n");
+
+  delete data["video-link"];
+  delete data["form-name"];
+
+  const fingerprint = JSON.stringify(data);
+
+  // Reuse the same ID when retrying unchanged details.
+  if (!pendingSubmission ||
+      pendingSubmission.fingerprint !== fingerprint) {
+    pendingSubmission = {
+      fingerprint,
+      body: {
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        data
+      }
+    };
+  }
 
   submitting = true;
   submitButton.disabled = true;
   submitButton.textContent = "Sending…";
   feedback.textContent = "Sending your request. Please wait.";
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+
   try {
-    const response = await fetch("/", {
+    const endpoint = new URL(TRACKER_URL);
+    endpoint.searchParams.set("key", WEBHOOK_KEY);
+
+    const response = await fetch(endpoint.toString(), {
       method: "POST",
-      body: data
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8"
+      },
+      body: JSON.stringify(pendingSubmission.body),
+      signal: controller.signal,
+      redirect: "follow",
+      credentials: "omit"
     });
 
-    if (!response.ok) {
-      throw new Error("Submission failed");
+    const result = (await response.text()).trim();
+
+    if (!response.ok || result !== "OK") {
+      throw new Error("Tracker did not confirm receipt.");
     }
 
     const card = document.createElement("article");
     card.className = "request-card";
 
     const title = document.createElement("h3");
-    title.textContent = projectTitle;
+    title.textContent = data.title || "Design request";
 
     const status = document.createElement("p");
     status.textContent =
-      "Submitted — awaiting review. " +
+      "Received — awaiting review. " +
       new Date().toLocaleString();
 
-    card.append(title, status);
+    const reference = document.createElement("p");
+    reference.textContent =
+      "Submission ID: " + pendingSubmission.body.id;
+
+    card.append(title, status, reference);
     requestList.append(card);
 
+    pendingSubmission = null;
     form.reset();
 
-const successMessage =
-  "🎉 Congratulations! Your project request has been submitted successfully. " +
-  "Grace will review your brief and contact you soon.";
-
-feedback.textContent = successMessage;
-alert(successMessage);
-  } catch {
+    feedback.textContent =
+      "🎉 Your request has been saved to Grace’s tracker! " +
+      "Grace will review your brief and contact you soon.";
+  } catch (error) {
     feedback.textContent =
       "We could not confirm your submission. " +
-      "Your details are still here. " +
-      "Check your connection or contact Grace before retrying.";
+      "Your details are still here. Contact Grace to check " +
+      "the tracker before retrying.";
+    console.error("Submission confirmation failed:", error);
   } finally {
+    clearTimeout(timeout);
     submitting = false;
     submitButton.disabled = false;
-    submitButton.textContent = "Submit";
+    submitButton.textContent = "Submit design request";
   }
 });
 
